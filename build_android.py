@@ -144,11 +144,12 @@ write("app/src/main/res/mipmap-hdpi/ic_launcher.png",
 write("app/build.gradle", """plugins { id 'com.android.application' }
 android {
     namespace 'it.edu.filattiera84.app'
-    compileSdk 34
+  compileSdk 35
+    buildToolsVersion "35.0.0"
     defaultConfig {
         applicationId "it.edu.filattiera84.app"
         minSdk 24
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
     }
@@ -166,7 +167,7 @@ dependencies {
 # build.gradle (root)
 write("build.gradle", """buildscript {
     repositories { google(); mavenCentral() }
-    dependencies { classpath 'com.android.tools.build:gradle:8.2.2' }
+    dependencies { classpath 'com.android.tools.build:gradle:8.7.0' }
 }
 allprojects { repositories { google(); mavenCentral() } }
 """)
