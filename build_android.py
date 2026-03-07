@@ -1,7 +1,8 @@
 import os, struct, zlib
 
 def mkdir(p):
-    os.makedirs(p, exist_ok=True)
+    if p:
+        os.makedirs(p, exist_ok=True)
 
 def write(path, content, mode="w"):
     mkdir(os.path.dirname(path))
