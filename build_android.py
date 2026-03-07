@@ -143,8 +143,47 @@ create_structure()
 write_file("app/src/main/res/layout/activity_main.xml", layout_content)
 write_file("app/src/main/AndroidManifest.xml", manifest_content)
 write_file("app/src/main/java/it/edu/filattiera84/app/MainActivity.java", java_content)
-write_file("app/build.gradle", build_gradle)
-write_file("settings.gradle", "include ':app'")
+# build.gradle (root)
+# build.gradle (app)
+write("app/build.gradle", """plugins {
+    id 'com.android.application'
+}
+android {
+    namespace 'it.edu.filattiera84.app'
+    compileSdk 35
+    defaultConfig {
+        applicationId "it.edu.filattiera84.app"
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName "1.0"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.webkit:webkit:1.9.0'
+}
+""")
+write("settings.gradle", """pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = 'filattiera84'
+include ':app'
+""")
 write_file("build.gradle", "buildscript { repositories { google(); mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:8.2.2' } } allprojects { repositories { google(); mavenCentral() } }")
 
 print("Progetto aggiornato con Barra di Caricamento!")
