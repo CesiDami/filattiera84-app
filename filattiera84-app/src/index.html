@@ -370,10 +370,25 @@ function renderNotif() {
       ${n.time ? `<div class="nitime">${n.time}</div>` : ''}
     </div>`).join('');
 }
+
+// BUG FIX #1: logica notifiche estratta in funzione condivisa (usata sia nel try che nel catch)
+function pushCircNotif(circs) {
+  circs.filter(c=>c.isNew).forEach(c=>{
+    if(!NOTIFICHE.find(n=>n.title.includes('n.'+c.num)))
+      NOTIFICHE.unshift({title:'Nuova circolare n.'+c.num, body:c.title, time:'recente', unread:true});
+  });
+  const nb = NOTIFICHE.filter(n=>n.unread).length;
+  const b = document.getElementById('nbadge');
+  if(nb>0){ b.textContent=nb; b.style.display='flex'; }
+  else { b.style.display='none'; }
+  renderNotif();
+}
+
 function toggleNotif(){
   const p=document.getElementById('npanel');
   p.classList.toggle('open');
   if(p.classList.contains('open')){
+    renderNotif(); // BUG FIX #2: ri-renderizza sempre all'apertura
     document.getElementById('nbadge').style.display='none';
     NOTIFICHE.forEach(n=>n.unread=false);
   }
@@ -410,15 +425,7 @@ async function loadCirc(){
   try {
     const posts = await apiFetch(API+'/circolare?per_page=10&orderby=date&order=desc&_embed=1','circ');
     const circs = posts.map(parseCirc);
-
-    circs.filter(c=>c.isNew).forEach(c=>{
-      if(!NOTIFICHE.find(n=>n.title.includes('n.'+c.num)))
-        NOTIFICHE.unshift({title:'Nuova circolare n.'+c.num, body:c.title, time:'recente', unread:true});
-    });
-    const nb = NOTIFICHE.filter(n=>n.unread).length;
-    if(nb>0){const b=document.getElementById('nbadge');b.textContent=nb;b.style.display='flex';}
-    renderNotif();
-
+    pushCircNotif(circs); // BUG FIX #1: usa funzione condivisa
     renderCirc('home-circ', circs.slice(0,3));
     renderCirc('all-circ',  circs);
   } catch(err) {
@@ -429,6 +436,7 @@ async function loadCirc(){
       {num:'163', title:'Accesso professionisti sanitari in classe', data:'23/02/2026', tipo:'Tutta la comunità', isNew:false, url:'https://www.filattiera84.edu.it/circolare/aaccesso-in-classe-di-professionisti-sanitari-nellambito-di-piani-terapeutici-individualizzati/'},
       {num:'162', title:'Sportello ascolto psicologico a.s. 2025/26', data:'23/02/2026', tipo:'Tutta la comunità', isNew:false, url:'https://www.filattiera84.edu.it/circolare/avvio-attivita-di-sportello-dascolto-psicologico-uno-spazio-per-crescere-capire-imparare-a-stare-bene-studio-progetti-evolutivi-a-s-2025-26/'},
     ];
+    pushCircNotif(fb); // BUG FIX #1: notifiche anche nel fallback
     renderCirc('home-circ', fb.slice(0,3));
     renderCirc('all-circ',  fb);
   }
