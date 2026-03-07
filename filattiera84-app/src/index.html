@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#003366" />
+  <title>IC Filattiera 84</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --primary: #003366;
+      --primary-light: #0055a5;
+      --accent: #f5a623;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --text: #1a1a2e;
+      --text-muted: #666;
+      --radius: 14px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ─── HEADER ─── */
+    .header {
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 100;
+      min-height: 60px;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-logo .logo-icon {
+      width: 38px; height: 38px;
+      background: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .header-title { font-size: 15px; font-weight: 700; line-height: 1.2; }
+    .header-subtitle { font-size: 11px; opacity: 0.8; }
+    .header-bell {
+      background: rgba(255,255,255,0.15);
+      border: none; color: white;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .notif-badge {
+      position: absolute; top: 4px; right: 4px;
+      background: var(--accent); color: white;
+      border-radius: 50%; width: 14px; height: 14px;
+      font-size: 9px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── MAIN CONTENT ─── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ─── VIEWS ─── */
+    .view { display: none; padding: 16px; }
+    .view.active { display: block; }
+
+    /* ─── HOME ─── */
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: var(--radius);
+      padding: 20px;
+      color: white;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome-banner::after {
+      content: '🏫';
+      position: absolute; right: 16px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 48px; opacity: 0.2;
+    }
+    .welcome-banner h2 { font-size: 18px; margin-bottom: 4px; }
+    .welcome-banner p { font-size: 13px; opacity: 0.85; }
+
+    .section-title {
+      font-size: 13px; font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin: 16px 0 10px;
+    }
+
+    /* ─── QUICK LINKS GRID ─── */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .quick-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      border: 1.5px solid transparent;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .quick-card:active { transform: scale(0.97); }
+    .quick-card .qc-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .quick-card .qc-label {
+      font-size: 12px; font-weight: 600;
+      text-align: center; line-height: 1.3;
+    }
+    .qc-argo   .qc-icon { background: #e8f4fd; }
+    .qc-segr   .qc-icon { background: #fff3e0; }
+    .qc-sito   .qc-icon { background: #e8f5e9; }
+    .qc-moodle .qc-icon { background: #f3e5f5; }
+
+    /* ─── CIRCOLARI ─── */
+    .circ-list { display: flex; flex-direction: column; gap: 10px; }
+    .circ-item {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .circ-item:active { transform: scale(0.98); }
+    .circ-badge {
+      background: var(--primary);
+      color: white;
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 11px; font-weight: 700;
+      white-space: nowrap;
+      min-width: 44px;
+      text-align: center;
+    }
+    .circ-badge.new { background: #e53935; }
+    .circ-info { flex: 1; min-width: 0; }
+    .circ-title { font-size: 13px; font-weight: 600; line-height: 1.4; margin-bottom: 3px; }
+    .circ-meta { font-size: 11px; color: var(--text-muted); }
+    .circ-arrow { font-size: 16px; color: var(--text-muted); align-self: center; }
+
+    /* ─── CALENDARIO ─── */
+    .cal-header {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+    }
+    .cal-month-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .cal-month-nav button {
+      background: var(--bg); border: none;
+      width: 32px; height: 32px; border-radius: 50%;
+      font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cal-month-title { font-size: 16px; font-weight: 700; }
+    .cal-days-header {
+      display: grid; grid-template-columns: repeat(7,1fr);
+      text-align: center; margin-bottom: 6px;
+    }
+    .cal-days-header span { font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 4px 0; }
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7,1fr);
+      gap: 2px;
+    }
+    .cal-day {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; font-size: 13px; cursor: pointer;
+      position: relative;
+    }
+    .cal-day.today { background: var(--primary); color: white; font-weight: 700; }
+    .cal-day.has-event::after {
+      content: ''; position: absolute; bottom: 3px;
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--accent);
+    }
+    .cal-day.today.has-event::after { background: white; }
+    .cal-day.other-month { color: #ccc; }
+    .cal-day.holiday { color: #e53935; }
+
+    .events-list { display: flex; flex-direction: column; gap: 8px; }
+    .event-item {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .event-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      margin-top: 4px; flex-shrink: 0;
+    }
+    .event-body { flex: 1; }
+    .event-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .event-date { font-size: 11px; color: var(--text-muted); }
+
+    /* ─── SITO (WebView) ─── */
+    #webview-frame {
+      width: 100%; height: 100%;
+      border: none;
+      display: block;
+    }
+    .webview-container {
+      height: calc(100vh - 60px - 60px);
+      position: relative;
+    }
+    .webview-toolbar {
+      background: var(--primary);
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+    }
+    .webview-toolbar button {
+      background: rgba(255,255,255,0.15); border: none; color: white;
+      width: 32px; height: 32px; border-radius: 6px;
+      font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .webview-url {
+      flex: 1; background: rgba(255,255,255,0.12);
+      border: none; color: white; font-size: 12px;
+      padding: 6px 10px; border-radius: 6px; outline: none;
+    }
+
+    /* ─── BOTTOM NAV ─── */
+    .bottom-nav {
+      background: var(--card);
+      display: flex;
+      border-top: 1px solid #e0e0e0;
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 100;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 8px 4px;
+      cursor: pointer; border: none; background: none;
+      color: var(--text-muted);
+      font-size: 10px; font-weight: 600;
+      gap: 3px;
+      transition: color 0.2s;
+    }
+    .nav-item .nav-icon { font-size: 22px; }
+    .nav-item.active { color: var(--primary); }
+    .nav-item.active .nav-icon { transform: scale(1.1); }
+
+    /* ─── NOTIFICHE PANEL ─── */
+    .notif-panel {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5); z-index: 999;
+      display: none; align-items: flex-start; justify-content: flex-end;
+    }
+    .notif-panel.open { display: flex; }
+    .notif-box {
+      background: white; width: 85%; max-width: 340px;
+      height: 100%; overflow-y: auto;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.3);
+      padding: 0;
+    }
+    .notif-box-header {
+      background: var(--primary); color: white;
+      padding: 16px; padding-top: max(16px, env(safe-area-inset-top));
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .notif-box-header h3 { font-size: 16px; }
+    .notif-box-header button {
+      background: none; border: none; color: white; font-size: 22px; cursor: pointer;
+    }
+    .notif-item {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .notif-item.unread { background: #e8f0fb; }
+    .notif-item .ni-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+    .notif-item .ni-body { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+    .notif-item .ni-time { font-size: 10px; color: #aaa; margin-top: 4px; }
+
+    /* ─── TOAST ─── */
+    .toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #333; color: white; padding: 10px 20px;
+      border-radius: 20px; font-size: 13px;
+      opacity: 0; transition: opacity 0.3s, transform 0.3s;
+      z-index: 9999; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">
+    <div class="logo-icon">🏫</div>
+    <div>
+      <div class="header-title">IC P.zza Filattiera</div>
+      <div class="header-subtitle">Roma · Scuola digitale</div>
+    </div>
+  </div>
+  <button class="header-bell" onclick="toggleNotif()">
+    🔔
+    <span class="notif-badge" id="notif-count">3</span>
+  </button>
+</div>
+
+<!-- CONTENUTO PRINCIPALE -->
+<div class="content">
+
+  <!-- VIEW: HOME -->
+  <div class="view active" id="view-home">
+    <div class="welcome-banner">
+      <h2>Benvenuto nell'app</h2>
+      <p>IC Piazza Filattiera · Via Filattiera, Roma</p>
+    </div>
+
+    <div class="section-title">🔗 Accessi rapidi</div>
+    <div class="quick-grid">
+      <div class="quick-card qc-argo" onclick="openLink('https://www.portaleargo.it/famiglie/')">
+        <div class="qc-icon">📚</div>
+        <div class="qc-label">Registro Argo (Famiglia)</div>
+      </div>
+      <div class="quick-card qc-segr" onclick="openLink('mailto:rmic8fh00r@istruzione.it')">
+        <div class="qc-icon">✉️</div>
+        <div class="qc-label">Segreteria Email</div>
+      </div>
+      <div class="quick-card qc-sito" onclick="switchView('sito')">
+        <div class="qc-icon">🌐</div>
+        <div class="qc-label">Sito ufficiale</div>
+      </div>
+      <div class="quick-card qc-moodle" onclick="openLink('https://www.filattiera84.edu.it/circolari/')">
+        <div class="qc-icon">📋</div>
+        <div class="qc-label">Circolari online</div>
+      </div>
+    </div>
+
+    <div class="section-title">📢 Ultime circolari</div>
+    <div class="circ-list" id="home-circolari"></div>
+
+    <div class="section-title">📅 Prossimi eventi</div>
+    <div class="events-list" id="home-events"></div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- VIEW: CIRCOLARI -->
+  <div class="view" id="view-circolari">
+    <div class="section-title">📋 Circolari e comunicazioni</div>
+    <div class="circ-list" id="all-circolari"></div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- VIEW: CALENDARIO -->
+  <div class="view" id="view-calendario">
+    <div class="cal-header">
+      <div class="cal-month-nav">
+        <button onclick="changeMonth(-1)">‹</button>
+        <div class="cal-month-title" id="cal-month-label"></div>
+        <button onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-days-header">
+        <span>L</span><span>M</span><span>M</span><span>G</span>
+        <span>V</span><span>S</span><span>D</span>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div class="section-title">📅 Eventi del mese</div>
+    <div class="events-list" id="events-month"></div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- VIEW: SITO WEB -->
+  <div class="view" id="view-sito" style="padding:0">
+    <div class="webview-toolbar">
+      <button onclick="webviewBack()">←</button>
+      <button onclick="webviewRefresh()">↻</button>
+      <input class="webview-url" id="webview-url-bar" value="www.filattiera84.edu.it" readonly />
+      <button onclick="openExternal()">⤴</button>
+    </div>
+    <div class="webview-container">
+      <iframe id="webview-frame" src="https://www.filattiera84.edu.it/"
+        allow="geolocation; microphone; camera"
+        sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation"
+        title="Sito IC Filattiera 84">
+      </iframe>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="switchView('home')">
+    <span class="nav-icon">🏠</span>Home
+  </button>
+  <button class="nav-item" id="nav-circolari" onclick="switchView('circolari')">
+    <span class="nav-icon">📋</span>Circolari
+  </button>
+  <button class="nav-item" id="nav-calendario" onclick="switchView('calendario')">
+    <span class="nav-icon">📅</span>Calendario
+  </button>
+  <button class="nav-item" id="nav-sito" onclick="switchView('sito')">
+    <span class="nav-icon">🌐</span>Sito web
+  </button>
+</nav>
+
+<!-- PANNELLO NOTIFICHE -->
+<div class="notif-panel" id="notif-panel" onclick="closeNotifOutside(event)">
+  <div class="notif-box">
+    <div class="notif-box-header">
+      <h3>🔔 Notifiche</h3>
+      <button onclick="toggleNotif()">✕</button>
+    </div>
+    <div id="notif-list"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════
+//  CONFIGURAZIONE API — WordPress REST (filattiera84.edu.it)
+// ════════════════════════════════════════════════════
+
+const BASE_URL   = 'https://www.filattiera84.edu.it';
+const API        = `${BASE_URL}/wp-json/wp/v2`;
+
+// Cache in memoria per evitare richieste inutili
+const cache = { circolari: null, notizie: null, eventi: null, ts: {} };
+const CACHE_TTL = 5 * 60 * 1000; // 5 minuti
+
+// Notifiche dinamiche (popolate al caricamento)
+let NOTIFICHE = [
+  { title: "Benvenuto!", body: "Hai installato l'app ufficiale dell'IC P.zza Filattiera.", time: "sempre", unread: false }
+];
+
+// ─── Helper: fetch con cache ──────────────────────
+async function apiFetch(endpoint, cacheKey) {
+  const now = Date.now();
+  if (cache[cacheKey] && (now - cache.ts[cacheKey]) < CACHE_TTL) {
+    return cache[cacheKey];
+  }
+  const res = await fetch(endpoint, { headers: { 'Accept': 'application/json' } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  cache[cacheKey] = data;
+  cache.ts[cacheKey] = now;
+  return data;
+}
+
+// ─── Parsing circolari dal custom post type ───────
+function parseCircolare(post) {
+  const title   = decodeHtml(post.title?.rendered || '');
+  // Il numero circolare spesso è nel titolo: "Circolare 173 – ..."
+  const numMatch = title.match(/[Cc]ircolare\s+(\d+)/);
+  const num     = numMatch ? numMatch[1] : (post.id || '?');
+  // Rimuove il prefisso "Circolare N –" dal titolo visualizzato
+  const cleanTitle = title.replace(/^[Cc]ircolare\s+\d+\s*[-–]\s*/, '').trim() || title;
+  // Tipo/destinatario dal primo tag se presente
+  const tags    = post._embedded?.['wp:term']?.[1]?.map(t => t.name) || [];
+  const tipo    = tags[0] || 'Generale';
+  const dateRaw = post.date || '';
+  const dateObj = new Date(dateRaw);
+  const dataFmt = dateObj.toLocaleDateString('it-IT', { day:'2-digit', month:'2-digit', year:'numeric' });
+  // "Nuova" se pubblicata negli ultimi 5 giorni
+  const isNew   = (Date.now() - dateObj.getTime()) < 5 * 24 * 3600 * 1000;
+  return { num, title: cleanTitle, data: dataFmt, tipo, new: isNew, url: post.link || `${BASE_URL}/circolare/` };
+}
+
+// ─── Parsing eventi ───────────────────────────────
+const EVENT_COLORS = ['#e53935','#1565c0','#2e7d32','#e65100','#6a1b9a','#00838f','#f57f17'];
+function parseEvento(post, idx) {
+  const title = decodeHtml(post.title?.rendered || '');
+  // Data inizio: meta 'event_start' oppure post.date
+  const rawDate = post.meta?.event_start || post.date || '';
+  const date    = rawDate.substring(0, 10); // yyyy-mm-dd
+  const color   = EVENT_COLORS[idx % EVENT_COLORS.length];
+  return { title, date, color, url: post.link || `${BASE_URL}/evento/` };
+}
+
+// ─── Decode HTML entities ─────────────────────────
+function decodeHtml(str) {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = str;
+  return txt.value;
+}
+
+// ─── Tempo relativo ───────────────────────────────
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 2)   return 'adesso';
+  if (m < 60)  return `${m} minuti fa`;
+  const h = Math.floor(m / 60);
+  if (h < 24)  return `${h} ore fa`;
+  const d = Math.floor(h / 24);
+  if (d < 30)  return `${d} giorni fa`;
+  return new Date(dateStr).toLocaleDateString('it-IT');
+}
+
+// ════════════════════════════════════════════════════
+//  CARICAMENTO DATI DAL SITO
+// ════════════════════════════════════════════════════
+
+// Spinner HTML
+function showSpinner(containerId) {
+  document.getElementById(containerId).innerHTML =
+    `<div style="text-align:center;padding:30px;color:#aaa">
+       <div style="font-size:28px;animation:spin 1s linear infinite;display:inline-block">⟳</div>
+       <div style="font-size:13px;margin-top:8px">Caricamento in corso…</div>
+     </div>`;
+}
+function showError(containerId, msg) {
+  document.getElementById(containerId).innerHTML =
+    `<div style="text-align:center;padding:24px;color:#e53935;font-size:13px">
+       ⚠️ ${msg}<br><button onclick="loadAll()" style="margin-top:10px;padding:6px 16px;
+       border:1px solid #e53935;background:none;border-radius:8px;color:#e53935;cursor:pointer">
+       Riprova</button></div>`;
+}
+
+async function loadCircolari() {
+  ['home-circolari','all-circolari'].forEach(showSpinner);
+  try {
+    // custom post type 'circolare', con embed per tag
+    const url = `${API}/circolare?per_page=10&orderby=date&order=desc&_embed=1`;
+    const posts = await apiFetch(url, 'circolari');
+    const circolari = posts.map(parseCircolare);
+
+    // Aggiorna notifiche con le circolari nuove
+    const nuove = circolari.filter(c => c.new);
+    nuove.forEach(c => {
+      if (!NOTIFICHE.find(n => n.title.includes(`n.${c.num}`))) {
+        NOTIFICHE.unshift({
+          title: `Nuova circolare n.${c.num}`,
+          body: c.title,
+          time: 'recente',
+          unread: true
+        });
+      }
+    });
+    const unreadCount = NOTIFICHE.filter(n => n.unread).length;
+    const badge = document.getElementById('notif-count');
+    if (unreadCount > 0) { badge.textContent = unreadCount; badge.style.display = 'flex'; }
+    renderNotifiche();
+
+    renderCircolari('home-circolari', circolari.slice(0, 3));
+    renderCircolari('all-circolari', circolari);
+  } catch(e) {
+    console.warn('API circolari non disponibile, uso dati fallback', e);
+    // Fallback: apre la pagina circolari nel sito
+    const fallback = [
+      { num:'173', title:'Sciopero 9 marzo 2026', data:'06/03/2026', tipo:'Generale', new:true, url:`${BASE_URL}/circolare/` },
+      { num:'166', title:'Formazione docenti tutor – a.s. 2025/26', data:'24/02/2026', tipo:'Docenti', url:`${BASE_URL}/circolare/` },
+      { num:'165', title:'O.M. n.27 del 16 febbraio 2026', data:'21/02/2026', tipo:'Generale', url:`${BASE_URL}/circolare/` },
+      { num:'163', title:'Accesso in classe di professionisti sanitari', data:'18/02/2026', tipo:'Famiglie', url:`${BASE_URL}/circolare/` },
+      { num:'162', title:'Avvio Sportello d\'ascolto psicologico a.s. 2025/26', data:'15/02/2026', tipo:'Studenti', url:`${BASE_URL}/circolare/` },
+    ];
+    renderCircolari('home-circolari', fallback.slice(0, 3));
+    renderCircolari('all-circolari', fallback);
+  }
+}
+
+async function loadEventi() {
+  ['home-events','events-month'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) showSpinner(id);
+  });
+  try {
+    const url = `${API}/evento?per_page=20&orderby=date&order=asc&_embed=1`;
+    const posts = await apiFetch(url, 'eventi');
+    const eventi = posts.map(parseEvento);
+    renderEvents('home-events', eventi.slice(0, 3));
+    // aggiorna calendario
+    window._EVENTI_LIVE = eventi;
+    renderCalendar();
+  } catch(e) {
+    console.warn('API eventi non disponibile', e);
+    window._EVENTI_LIVE = [];
+    renderCalendar();
+    ['home-events'].forEach(id => showError(id, 'Impossibile caricare gli eventi'));
+  }
+}
+
+async function loadAll() {
+  await Promise.all([loadCircolari(), loadEventi()]);
+}
+
+// CSS spinner
+const style = document.createElement('style');
+style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+document.head.appendChild(style);
+
+// ════════════════════════════════════════════════════
+//  NAVIGAZIONE
+// ════════════════════════════════════════════════════
+function switchView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if (name === 'calendario') renderCalendar();
+}
+
+// ════════════════════════════════════════════════════
+//  RENDER CIRCOLARI
+// ════════════════════════════════════════════════════
+function renderCircolari(containerId, items) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = items.map(c => `
+    <div class="circ-item" onclick="openLink('${c.url}')">
+      <div class="circ-badge ${c.new ? 'new' : ''}">N.${c.num}</div>
+      <div class="circ-info">
+        <div class="circ-title">${c.title}</div>
+        <div class="circ-meta">${c.data} · ${c.tipo}</div>
+      </div>
+      <div class="circ-arrow">›</div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════
+//  RENDER EVENTI
+// ════════════════════════════════════════════════════
+function renderEvents(containerId, events) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = events.map(e => `
+    <div class="event-item">
+      <div class="event-dot" style="background:${e.color}"></div>
+      <div class="event-body">
+        <div class="event-title">${e.title}</div>
+        <div class="event-date">${formatDate(e.date)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function formatDate(d) {
+  const opts = { weekday:'long', day:'numeric', month:'long', year:'numeric' };
+  return new Date(d).toLocaleDateString('it-IT', opts);
+}
+
+// ════════════════════════════════════════════════════
+//  CALENDARIO
+// ════════════════════════════════════════════════════
+let calDate = new Date();
+
+function renderCalendar() {
+  const year = calDate.getFullYear();
+  const month = calDate.getMonth();
+  const months = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
+                  'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  document.getElementById('cal-month-label').textContent = `${months[month]} ${year}`;
+
+  const EVENTI = window._EVENTI_LIVE || [];
+  const first = new Date(year, month, 1).getDay();
+  const days  = new Date(year, month+1, 0).getDate();
+  const startOffset = (first === 0) ? 6 : first - 1;
+
+  const today = new Date();
+  const eventDays = EVENTI
+    .filter(e => { const d = new Date(e.date); return d.getMonth()===month && d.getFullYear()===year; })
+    .map(e => new Date(e.date).getDate());
+
+  let html = '';
+  for (let i = 0; i < startOffset; i++) html += '<div class="cal-day other-month"></div>';
+  for (let d = 1; d <= days; d++) {
+    const isToday = (d===today.getDate() && month===today.getMonth() && year===today.getFullYear());
+    const hasEv  = eventDays.includes(d);
+    const isSun  = (new Date(year,month,d).getDay() === 0);
+    html += `<div class="cal-day ${isToday?'today':''} ${hasEv?'has-event':''} ${isSun?'holiday':''}">${d}</div>`;
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+
+  const monthEvents = EVENTI.filter(e => {
+    const d = new Date(e.date);
+    return d.getMonth()===month && d.getFullYear()===year;
+  });
+  const evEl = document.getElementById('events-month');
+  evEl.innerHTML = monthEvents.length
+    ? monthEvents.map(e => `
+        <div class="event-item">
+          <div class="event-dot" style="background:${e.color}"></div>
+          <div class="event-body">
+            <div class="event-title">${e.title}</div>
+            <div class="event-date">${formatDate(e.date)}</div>
+          </div>
+        </div>`).join('')
+    : '<div style="color:#aaa;font-size:13px;text-align:center;padding:20px">Nessun evento questo mese</div>';
+}
+
+function changeMonth(dir) { calDate.setMonth(calDate.getMonth()+dir); renderCalendar(); }
+
+// ════════════════════════════════════════════════════
+//  NOTIFICHE
+// ════════════════════════════════════════════════════
+function renderNotifiche() {
+  document.getElementById('notif-list').innerHTML = NOTIFICHE.map(n => `
+    <div class="notif-item ${n.unread?'unread':''}">
+      <div class="ni-title">${n.title}</div>
+      <div class="ni-body">${n.body}</div>
+      <div class="ni-time">${n.time}</div>
+    </div>`).join('');
+}
+
+function toggleNotif() {
+  const p = document.getElementById('notif-panel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) {
+    // azzera badge
+    document.getElementById('notif-count').style.display = 'none';
+  }
+}
+function closeNotifOutside(e) {
+  if (e.target.id === 'notif-panel') toggleNotif();
+}
+
+// ════════════════════════════════════════════════════
+//  LINK / WEBVIEW
+// ════════════════════════════════════════════════════
+function openLink(url) {
+  if (window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Browser) {
+    Capacitor.Plugins.Browser.open({ url });
+  } else {
+    window.open(url, '_blank');
+  }
+}
+
+function openExternal() {
+  openLink('https://www.filattiera84.edu.it/');
+}
+
+function webviewBack() {
+  try { document.getElementById('webview-frame').contentWindow.history.back(); } catch(e) {}
+}
+function webviewRefresh() {
+  document.getElementById('webview-frame').src = document.getElementById('webview-frame').src;
+}
+
+// ════════════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ════════════════════════════════════════════════════
+//  PUSH NOTIFICATIONS (Capacitor)
+// ════════════════════════════════════════════════════
+async function initPush() {
+  if (!window.Capacitor) return;
+  const { PushNotifications } = Capacitor.Plugins;
+  if (!PushNotifications) return;
+  const perm = await PushNotifications.requestPermissions();
+  if (perm.receive === 'granted') {
+    await PushNotifications.register();
+    PushNotifications.addListener('registration', token => {
+      console.log('FCM Token:', token.value);
+      // ➜ inviare token al proprio backend per le notifiche mirate
+    });
+    PushNotifications.addListener('pushNotificationReceived', notif => {
+      showToast('📢 ' + notif.title);
+      NOTIFICHE.unshift({ title: notif.title, body: notif.body, time: 'adesso', unread: true });
+      document.getElementById('notif-count').style.display = 'flex';
+      document.getElementById('notif-count').textContent =
+        NOTIFICHE.filter(n=>n.unread).length;
+      renderNotifiche();
+    });
+  }
+}
+
+// ════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  window._EVENTI_LIVE = [];
+  renderCalendar();
+  renderNotifiche();
+  initPush();
+  loadAll(); // ← carica dati reali dal sito
+});
+</script>
+</body>
+</html>

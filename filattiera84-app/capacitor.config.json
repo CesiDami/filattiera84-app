@@ -1,0 +1,26 @@
+{
+  "appId": "it.edu.filattiera84.app",
+  "appName": "IC Filattiera 84",
+  "webDir": "src",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#003366",
+    "buildOptions": {
+      "keystorePath": "release-key.jks",
+      "keystoreAlias": "filattiera84"
+    }
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon",
+      "iconColor": "#003366"
+    }
+  }
+}
