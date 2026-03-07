@@ -1,425 +1,454 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <title>IC Filattiera 84</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-    :root {
-      /* ✏️ COLORI — cambia questi per cambiare tutta la grafica */
-      --primary:       #003366;   /* blu scuro — header e bottoni attivi */
-      --primary-light: #0055a5;   /* blu medio — sfumatura banner */
-      --accent:        #f5a623;   /* arancione — badge notifiche */
-      --bg:            #f0f4f8;   /* sfondo pagine */
-      --card:          #ffffff;   /* sfondo schede */
-      --text:          #1a1a2e;   /* testo principale */
-      --text-muted:    #666666;   /* testo secondario */
-      --radius: 14px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.10);
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    :root{
+      --primary:#003366;
+      --primary-light:#0055a5;
+      --accent:#f5a623;
+      --bg:#f0f4f8;
+      --card:#ffffff;
+      --text:#1a1a2e;
+      --muted:#666;
+      --radius:14px;
+      --shadow:0 2px 12px rgba(0,0,0,.10);
     }
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+    /* HEADER */
+    .header{background:var(--primary);color:white;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:100;min-height:60px}
+    .hlogo{display:flex;align-items:center;gap:10px}
+    .hicon{width:38px;height:38px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .htitle{font-size:15px;font-weight:700;line-height:1.2}
+    .hsub{font-size:11px;opacity:.8}
+    .hbell{background:rgba(255,255,255,.15);border:none;color:white;width:38px;height:38px;border-radius:50%;font-size:18px;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center}
+    .nbadge{position:absolute;top:4px;right:4px;background:var(--accent);color:white;border-radius:50%;width:14px;height:14px;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center}
 
-    .header { background:var(--primary); color:white; display:flex; align-items:center; justify-content:space-between; padding:12px 16px; padding-top:max(12px,env(safe-area-inset-top)); box-shadow:0 2px 8px rgba(0,0,0,0.3); z-index:100; min-height:60px; }
-    .header-logo { display:flex; align-items:center; gap:10px; }
-    .header-logo .logo-icon { width:38px; height:38px; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; }
-    .header-title    { font-size:15px; font-weight:700; line-height:1.2; }
-    .header-subtitle { font-size:11px; opacity:0.8; }
-    .header-bell { background:rgba(255,255,255,0.15); border:none; color:white; width:38px; height:38px; border-radius:50%; font-size:18px; cursor:pointer; position:relative; display:flex; align-items:center; justify-content:center; }
-    .notif-badge { position:absolute; top:4px; right:4px; background:var(--accent); color:white; border-radius:50%; width:14px; height:14px; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+    /* CONTENUTO */
+    .content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+    .view{display:none;padding:16px}
+    .view.active{display:block}
 
-    .content { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
-    .view { display:none; padding:16px; }
-    .view.active { display:block; }
+    /* BANNER */
+    .banner{background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:var(--radius);padding:20px;color:white;margin-bottom:16px;position:relative;overflow:hidden}
+    .banner::after{content:'🏫';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:48px;opacity:.2}
+    .banner h2{font-size:18px;margin-bottom:4px}
+    .banner p{font-size:13px;opacity:.85}
 
-    .welcome-banner { background:linear-gradient(135deg,var(--primary),var(--primary-light)); border-radius:var(--radius); padding:20px; color:white; margin-bottom:16px; position:relative; overflow:hidden; }
-    .welcome-banner::after { content:'🏫'; position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:48px; opacity:0.2; }
-    .welcome-banner h2 { font-size:18px; margin-bottom:4px; }
-    .welcome-banner p  { font-size:13px; opacity:0.85; }
+    .stitle{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 10px}
 
-    .section-title { font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin:16px 0 10px; }
+    /* GRIGLIA ACCESSI */
+    .qgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:8px}
+    .qcard{background:var(--card);border-radius:var(--radius);padding:16px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s;text-decoration:none;color:var(--text);border:none;width:100%}
+    .qcard:active{transform:scale(.97)}
+    .qicon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+    .qlabel{font-size:12px;font-weight:600;text-align:center;line-height:1.3}
+    .q1 .qicon{background:#e8f4fd}
+    .q2 .qicon{background:#fff3e0}
+    .q3 .qicon{background:#e8f5e9}
+    .q4 .qicon{background:#f3e5f5}
+    .q5 .qicon{background:#fce4ec}
+    .q6 .qicon{background:#e0f7fa}
 
-    .quick-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:8px; }
-    .quick-card { background:var(--card); border-radius:var(--radius); padding:16px 12px; display:flex; flex-direction:column; align-items:center; gap:8px; box-shadow:var(--shadow); cursor:pointer; transition:transform 0.15s; text-decoration:none; color:var(--text); }
-    .quick-card:active { transform:scale(0.97); }
-    .quick-card .qc-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px; }
-    .quick-card .qc-label { font-size:12px; font-weight:600; text-align:center; line-height:1.3; }
-    .qc-1 .qc-icon { background:#e8f4fd; }
-    .qc-2 .qc-icon { background:#fff3e0; }
-    .qc-3 .qc-icon { background:#e8f5e9; }
-    .qc-4 .qc-icon { background:#f3e5f5; }
-    .qc-5 .qc-icon { background:#fce4ec; }
-    .qc-6 .qc-icon { background:#e0f7fa; }
+    /* CIRCOLARI */
+    .clist{display:flex;flex-direction:column;gap:10px}
+    .citem{background:var(--card);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:transform .15s;text-decoration:none;color:var(--text)}
+    .citem:active{transform:scale(.98)}
+    .cbadge{background:var(--primary);color:white;border-radius:8px;padding:4px 8px;font-size:11px;font-weight:700;white-space:nowrap;min-width:44px;text-align:center;flex-shrink:0}
+    .cbadge.new{background:#e53935}
+    .cinfo{flex:1;min-width:0}
+    .ctitle{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:3px}
+    .cmeta{font-size:11px;color:var(--muted)}
+    .carrow{font-size:16px;color:var(--muted);align-self:center}
 
-    .circ-list { display:flex; flex-direction:column; gap:10px; }
-    .circ-item { background:var(--card); border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow); display:flex; align-items:flex-start; gap:12px; cursor:pointer; transition:transform 0.15s; }
-    .circ-item:active { transform:scale(0.98); }
-    .circ-badge { background:var(--primary); color:white; border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; white-space:nowrap; min-width:44px; text-align:center; }
-    .circ-badge.new { background:#e53935; }
-    .circ-info { flex:1; min-width:0; }
-    .circ-title { font-size:13px; font-weight:600; line-height:1.4; margin-bottom:3px; }
-    .circ-meta  { font-size:11px; color:var(--text-muted); }
-    .circ-arrow { font-size:16px; color:var(--text-muted); align-self:center; }
+    /* CALENDARIO */
+    .calwrap{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
+    .calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .calnav button{background:var(--bg);border:none;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer}
+    .calmth{font-size:16px;font-weight:700}
+    .caldh{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:6px}
+    .caldh span{font-size:11px;font-weight:600;color:var(--muted);padding:4px 0}
+    .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+    .calday{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;cursor:pointer;position:relative}
+    .calday.today{background:var(--primary);color:white;font-weight:700}
+    .calday.hasev::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--accent)}
+    .calday.today.hasev::after{background:white}
+    .calday.other{color:#ccc}
+    .calday.sun{color:#e53935}
+    .evlist{display:flex;flex-direction:column;gap:8px}
+    .evitem{background:var(--card);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start}
+    .evdot{width:10px;height:10px;border-radius:50%;margin-top:4px;flex-shrink:0}
+    .evbody{flex:1}
+    .evtitle{font-size:13px;font-weight:600;margin-bottom:2px}
+    .evdate{font-size:11px;color:var(--muted)}
 
-    .cal-header { background:var(--card); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); margin-bottom:12px; }
-    .cal-month-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-    .cal-month-nav button { background:var(--bg); border:none; width:32px; height:32px; border-radius:50%; font-size:18px; cursor:pointer; }
-    .cal-month-title { font-size:16px; font-weight:700; }
-    .cal-days-header { display:grid; grid-template-columns:repeat(7,1fr); text-align:center; margin-bottom:6px; }
-    .cal-days-header span { font-size:11px; font-weight:600; color:var(--text-muted); padding:4px 0; }
-    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
-    .cal-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:13px; cursor:pointer; position:relative; }
-    .cal-day.today { background:var(--primary); color:white; font-weight:700; }
-    .cal-day.has-event::after { content:''; position:absolute; bottom:3px; width:4px; height:4px; border-radius:50%; background:var(--accent); }
-    .cal-day.today.has-event::after { background:white; }
-    .cal-day.other-month { color:#ccc; }
-    .cal-day.holiday { color:#e53935; }
-    .events-list { display:flex; flex-direction:column; gap:8px; }
-    .event-item { background:var(--card); border-radius:var(--radius); padding:12px 14px; box-shadow:var(--shadow); display:flex; gap:12px; align-items:flex-start; }
-    .event-dot  { width:10px; height:10px; border-radius:50%; margin-top:4px; flex-shrink:0; }
-    .event-body { flex:1; }
-    .event-title { font-size:13px; font-weight:600; margin-bottom:2px; }
-    .event-date  { font-size:11px; color:var(--text-muted); }
+    /* WEBVIEW */
+    .wvbar{background:var(--primary);display:flex;align-items:center;gap:8px;padding:8px 12px}
+    .wvbar button{background:rgba(255,255,255,.15);border:none;color:white;width:32px;height:32px;border-radius:6px;font-size:16px;cursor:pointer}
+    .wvurl{flex:1;background:rgba(255,255,255,.12);border:none;color:white;font-size:12px;padding:6px 10px;border-radius:6px}
+    .wvcont{height:calc(100vh - 60px - 56px)}
+    #wvframe{width:100%;height:100%;border:none}
 
-    .webview-toolbar { background:var(--primary); display:flex; align-items:center; gap:8px; padding:8px 12px; }
-    .webview-toolbar button { background:rgba(255,255,255,0.15); border:none; color:white; width:32px; height:32px; border-radius:6px; font-size:16px; cursor:pointer; }
-    .webview-url { flex:1; background:rgba(255,255,255,0.12); border:none; color:white; font-size:12px; padding:6px 10px; border-radius:6px; }
-    .webview-container { height:calc(100vh - 60px - 56px); }
-    #webview-frame { width:100%; height:100%; border:none; }
+    /* BOTTOM NAV */
+    .bnav{background:var(--card);display:flex;border-top:1px solid #e0e0e0;padding-bottom:env(safe-area-inset-bottom);z-index:100}
+    .nitem{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;border:none;background:none;color:var(--muted);font-size:10px;font-weight:600;gap:3px;transition:color .2s}
+    .nitem .ni{font-size:22px}
+    .nitem.active{color:var(--primary)}
 
-    /* ✏️ MENU IN BASSO — colore attivo = --primary */
-    .bottom-nav { background:var(--card); display:flex; border-top:1px solid #e0e0e0; padding-bottom:env(safe-area-inset-bottom); z-index:100; }
-    .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px 4px; cursor:pointer; border:none; background:none; color:var(--text-muted); font-size:10px; font-weight:600; gap:3px; transition:color 0.2s; }
-    .nav-item .nav-icon { font-size:22px; }
-    .nav-item.active { color:var(--primary); }
+    /* PANNELLO NOTIFICHE */
+    .npanel{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999;display:none;align-items:flex-start;justify-content:flex-end}
+    .npanel.open{display:flex}
+    .nbox{background:white;width:85%;max-width:340px;height:100%;overflow-y:auto;box-shadow:-4px 0 20px rgba(0,0,0,.3)}
+    .nboxh{background:var(--primary);color:white;padding:16px;padding-top:max(16px,env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between}
+    .nboxh h3{font-size:16px}
+    .nboxh button{background:none;border:none;color:white;font-size:22px;cursor:pointer}
+    .nitem2{padding:14px 16px;border-bottom:1px solid #f0f0f0}
+    .nitem2.unread{background:#e8f0fb}
+    .nit{font-size:13px;font-weight:600;margin-bottom:3px}
+    .nib{font-size:12px;color:var(--muted);line-height:1.4}
+    .nitime{font-size:10px;color:#aaa;margin-top:4px}
 
-    .notif-panel { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:999; display:none; align-items:flex-start; justify-content:flex-end; }
-    .notif-panel.open { display:flex; }
-    .notif-box { background:white; width:85%; max-width:340px; height:100%; overflow-y:auto; box-shadow:-4px 0 20px rgba(0,0,0,0.3); }
-    .notif-box-header { background:var(--primary); color:white; padding:16px; padding-top:max(16px,env(safe-area-inset-top)); display:flex; align-items:center; justify-content:space-between; }
-    .notif-box-header h3 { font-size:16px; }
-    .notif-box-header button { background:none; border:none; color:white; font-size:22px; cursor:pointer; }
-    .notif-item { padding:14px 16px; border-bottom:1px solid #f0f0f0; }
-    .notif-item.unread { background:#e8f0fb; }
-    .notif-item .ni-title { font-size:13px; font-weight:600; margin-bottom:3px; }
-    .notif-item .ni-body  { font-size:12px; color:var(--text-muted); line-height:1.4; }
-    .notif-item .ni-time  { font-size:10px; color:#aaa; margin-top:4px; }
-
-    .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px); background:#333; color:white; padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:opacity 0.3s,transform 0.3s; z-index:9999; white-space:nowrap; }
-    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-    @keyframes spin { to { transform:rotate(360deg); } }
+    /* TOAST */
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:white;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .3s,transform .3s;z-index:9999;white-space:nowrap}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spinner{text-align:center;padding:30px;color:#aaa}
+    .spinner .s{font-size:28px;animation:spin 1s linear infinite;display:inline-block}
   </style>
 </head>
 <body>
 
-<!-- ╔══════════════════════════════════════════════════╗
-     ║  ✏️ HEADER                                       ║
-     ║  Cambia: logo-icon (emoji), header-title,        ║
-     ║          header-subtitle                         ║
-     ╚══════════════════════════════════════════════════╝ -->
 <div class="header">
-  <div class="header-logo">
-    <div class="logo-icon">🏫</div>            <!-- ✏️ emoji icona -->
+  <div class="hlogo">
+    <div class="hicon">🏫</div>
     <div>
-      <div class="header-title">IC P.zza Filattiera</div>    <!-- ✏️ nome scuola -->
-      <div class="header-subtitle">Roma · Scuola digitale</div> <!-- ✏️ sottotitolo -->
+      <div class="htitle">IC P.zza Filattiera</div>
+      <div class="hsub">Roma · Scuola digitale</div>
     </div>
   </div>
-  <button class="header-bell" onclick="toggleNotif()">
-    🔔
-    <span class="notif-badge" id="notif-count" style="display:none">0</span>
+  <button class="hbell" onclick="toggleNotif()">
+    🔔<span class="nbadge" id="nbadge">0</span>
   </button>
 </div>
 
 <div class="content">
 
-  <!-- HOME -->
+  <!-- ── HOME ── -->
   <div class="view active" id="view-home">
-
-    <!-- ✏️ BANNER — cambia titolo e testo -->
-    <div class="welcome-banner">
+    <div class="banner">
       <h2>Benvenuto nell'app</h2>
-      <p>IC Piazza Filattiera · Via Filattiera, Roma</p>
+      <p>IC Piazza Filattiera 84 · Roma</p>
     </div>
 
-    <div class="section-title">🔗 Accessi rapidi</div>
+    <div class="stitle">🔗 Accessi rapidi</div>
+    <div class="qgrid">
 
-    <!-- ╔══════════════════════════════════════════════════╗
-         ║  ✏️ ACCESSI RAPIDI                               ║
-         ║  Ogni scheda: cambia emoji, etichetta e URL      ║
-         ║  Puoi avere da 2 a 6 schede (qc-1 … qc-6)       ║
-         ╚══════════════════════════════════════════════════╝ -->
-    <div class="quick-grid">
+      <!-- Registro Famiglie (Axios — link ufficiale dal sito) -->
+      <button class="qcard q1" onclick="openLink('https://registrofamiglie.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582')">
+        <div class="qicon">📚</div>
+        <div class="qlabel">Registro Famiglie</div>
+      </button>
 
-      <div class="quick-card qc-1" onclick="openLink('https://registrofamiglie.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582')">
-        <div class="qc-icon">📚</div>
-        <div class="qc-label">Registro Famiglie</div>  <!-- ✏️ -->
-      </div>
+      <!-- Registro Docenti (Axios — link ufficiale dal sito) -->
+      <button class="qcard q2" onclick="openLink('https://registro.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582')">
+        <div class="qicon">👩‍🏫</div>
+        <div class="qlabel">Registro Docenti</div>
+      </button>
 
-      <div class="quick-card qc-2" onclick="openLink('https://registro.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582')">
-        <div class="qc-icon">👩‍🏫</div>
-        <div class="qc-label">Registro Docenti</div>   <!-- ✏️ -->
-      </div>
+      <!-- Circolari — URL corretto dal sito -->
+      <button class="qcard q3" onclick="switchView('circolari')">
+        <div class="qicon">📋</div>
+        <div class="qlabel">Circolari</div>
+      </button>
 
-      <div class="quick-card qc-3" onclick="switchView('sito')">
-        <div class="qc-icon">🌐</div>
-        <div class="qc-label">Sito ufficiale</div>     <!-- ✏️ -->
-      </div>
+      <!-- Sito ufficiale — apre WebView interno -->
+      <button class="qcard q4" onclick="switchView('sito')">
+        <div class="qicon">🌐</div>
+        <div class="qlabel">Sito ufficiale</div>
+      </button>
 
-      <div class="quick-card qc-4" onclick="openLink('https://www.mim.gov.it/web/guest/pago-in-rete')">
-        <div class="qc-icon">💳</div>
-        <div class="qc-label">Pago in Rete</div>       <!-- ✏️ -->
-      </div>
+      <!-- Pago in Rete — link MIM ufficiale -->
+      <button class="qcard q5" onclick="openLink('https://www.istruzione.it/pagoinrete/')">
+        <div class="qicon">💳</div>
+        <div class="qlabel">Pago in Rete</div>
+      </button>
 
-      <div class="quick-card qc-5" onclick="openLink('mailto:rmic8eg00q@istruzione.it')">
-        <div class="qc-icon">✉️</div>
-        <div class="qc-label">Email Segreteria</div>   <!-- ✏️ -->
-      </div>
-
-      <div class="quick-card qc-6" onclick="openLink('https://www.filattiera84.edu.it/circolare/')">
-        <div class="qc-icon">📋</div>
-        <div class="qc-label">Tutte le Circolari</div> <!-- ✏️ -->
-      </div>
+      <!-- Email Segreteria — indirizzo ufficiale dal footer del sito -->
+      <button class="qcard q6" onclick="openLink('mailto:rmic8eg00q@istruzione.it')">
+        <div class="qicon">✉️</div>
+        <div class="qlabel">Email Segreteria</div>
+      </button>
 
     </div>
 
-    <div class="section-title">📢 Ultime circolari</div>
-    <div class="circ-list" id="home-circolari"></div>
+    <div class="stitle">📢 Ultime circolari</div>
+    <div class="clist" id="home-circ"></div>
 
-    <div class="section-title">📅 Prossimi eventi</div>
-    <div class="events-list" id="home-events"></div>
+    <div class="stitle">📅 Prossimi eventi</div>
+    <div class="evlist" id="home-ev"></div>
     <div style="height:16px"></div>
   </div>
 
-  <!-- CIRCOLARI -->
+  <!-- ── CIRCOLARI ── -->
   <div class="view" id="view-circolari">
-    <div class="section-title">📋 Circolari e comunicazioni</div>
-    <div class="circ-list" id="all-circolari"></div>
+    <div class="stitle">📋 Circolari e comunicazioni</div>
+    <div class="clist" id="all-circ"></div>
     <div style="height:16px"></div>
   </div>
 
-  <!-- CALENDARIO -->
+  <!-- ── CALENDARIO ── -->
   <div class="view" id="view-calendario">
-    <div class="cal-header">
-      <div class="cal-month-nav">
+    <div class="calwrap">
+      <div class="calnav">
         <button onclick="changeMonth(-1)">‹</button>
-        <div class="cal-month-title" id="cal-month-label"></div>
+        <div class="calmth" id="calmth"></div>
         <button onclick="changeMonth(1)">›</button>
       </div>
-      <div class="cal-days-header">
-        <span>L</span><span>M</span><span>M</span><span>G</span>
-        <span>V</span><span>S</span><span>D</span>
-      </div>
-      <div class="cal-grid" id="cal-grid"></div>
+      <div class="caldh"><span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span></div>
+      <div class="calgrid" id="calgrid"></div>
     </div>
-    <div class="section-title">📅 Eventi del mese</div>
-    <div class="events-list" id="events-month"></div>
+    <div class="stitle">📅 Eventi del mese</div>
+    <div class="evlist" id="ev-month"></div>
     <div style="height:16px"></div>
   </div>
 
-  <!-- SITO WEB -->
+  <!-- ── SITO WEB ── -->
   <div class="view" id="view-sito" style="padding:0">
-    <div class="webview-toolbar">
-      <button onclick="webviewBack()">←</button>
-      <button onclick="webviewRefresh()">↻</button>
-      <input class="webview-url" id="webview-url-bar" value="www.filattiera84.edu.it" readonly />
-      <button onclick="openExternal()">⤴</button>
+    <div class="wvbar">
+      <button onclick="wvBack()">←</button>
+      <button onclick="wvRefresh()">↻</button>
+      <input class="wvurl" value="www.filattiera84.edu.it" readonly/>
+      <button onclick="openLink('https://www.filattiera84.edu.it/')">⤴</button>
     </div>
-    <div class="webview-container">
-      <iframe id="webview-frame"
-        src="https://www.filattiera84.edu.it/"
+    <div class="wvcont">
+      <iframe id="wvframe" src="https://www.filattiera84.edu.it/"
         sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation"
-        title="Sito IC Filattiera 84">
-      </iframe>
+        title="Sito IC Filattiera 84"></iframe>
     </div>
   </div>
 
-</div>
+</div><!-- /content -->
 
-<!-- ╔══════════════════════════════════════════════════╗
-     ║  ✏️ MENU IN BASSO                                ║
-     ║  Cambia: emoji (.nav-icon) ed etichetta testo    ║
-     ║  NON cambiare id="nav-XXX" e switchView('XXX')   ║
-     ╚══════════════════════════════════════════════════╝ -->
-<nav class="bottom-nav">
-  <button class="nav-item active" id="nav-home"       onclick="switchView('home')">
-    <span class="nav-icon">🏠</span>Home          <!-- ✏️ -->
-  </button>
-  <button class="nav-item"        id="nav-circolari"  onclick="switchView('circolari')">
-    <span class="nav-icon">📋</span>Circolari     <!-- ✏️ -->
-  </button>
-  <button class="nav-item"        id="nav-calendario" onclick="switchView('calendario')">
-    <span class="nav-icon">📅</span>Calendario    <!-- ✏️ -->
-  </button>
-  <button class="nav-item"        id="nav-sito"       onclick="switchView('sito')">
-    <span class="nav-icon">🌐</span>Sito web      <!-- ✏️ -->
-  </button>
+<!-- MENU BASSO -->
+<nav class="bnav">
+  <button class="nitem active" id="nav-home"       onclick="sw('home')"><span class="ni">🏠</span>Home</button>
+  <button class="nitem"        id="nav-circolari"  onclick="sw('circolari')"><span class="ni">📋</span>Circolari</button>
+  <button class="nitem"        id="nav-calendario" onclick="sw('calendario')"><span class="ni">📅</span>Calendario</button>
+  <button class="nitem"        id="nav-sito"       onclick="sw('sito')"><span class="ni">🌐</span>Sito web</button>
 </nav>
 
-<div class="notif-panel" id="notif-panel" onclick="closeNotifOutside(event)">
-  <div class="notif-box">
-    <div class="notif-box-header">
-      <h3>🔔 Notifiche</h3>
-      <button onclick="toggleNotif()">✕</button>
-    </div>
-    <div id="notif-list"></div>
+<!-- NOTIFICHE -->
+<div class="npanel" id="npanel" onclick="closeNOut(event)">
+  <div class="nbox">
+    <div class="nboxh"><h3>🔔 Notifiche</h3><button onclick="toggleNotif()">✕</button></div>
+    <div id="nlist"></div>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const BASE_URL = 'https://www.filattiera84.edu.it';
-const API      = BASE_URL + '/wp-json/wp/v2';
-const cache    = { circolari:null, eventi:null, ts:{} };
-const CACHE_TTL = 5*60*1000;
-let NOTIFICHE  = [{title:'Benvenuto!',body:"App ufficiale IC P.zza Filattiera.",time:'sempre',unread:false}];
+// ── LINK UFFICIALI VERIFICATI ──────────────────────────────────────────
+const LINKS = {
+  sito:            'https://www.filattiera84.edu.it/',
+  circolari:       'https://www.filattiera84.edu.it/circolare/',
+  regFamiglie:     'https://registrofamiglie.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582',
+  regDocenti:      'https://registro.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582',
+  pagoInRete:      'https://www.istruzione.it/pagoinrete/',
+  emailSegreteria: 'mailto:rmic8eg00q@istruzione.it',
+  pec:             'mailto:rmic8eg00q@pec.istruzione.it',
+  tel:             'tel:068102978',
+};
+
+const BASE = 'https://www.filattiera84.edu.it';
+const API  = BASE + '/wp-json/wp/v2';
+let NOTIFICHE = [{title:'Benvenuto!', body:"App ufficiale IC P.zza Filattiera 84 — Roma.", time:'', unread:false}];
+const cache = {}, CACHE_TTL = 5*60*1000;
 
 async function apiFetch(url, key) {
   const now = Date.now();
-  if (cache[key] && (now-cache.ts[key])<CACHE_TTL) return cache[key];
-  const res = await fetch(url,{headers:{'Accept':'application/json'}});
-  if (!res.ok) throw new Error('HTTP '+res.status);
+  if (cache[key] && (now - cache[key].ts) < CACHE_TTL) return cache[key].data;
+  const res = await fetch(url, {headers:{'Accept':'application/json'}});
+  if (!res.ok) throw new Error('HTTP ' + res.status);
   const data = await res.json();
-  cache[key]=data; cache.ts[key]=now; return data;
+  cache[key] = {data, ts: now};
+  return data;
 }
 
-function decodeHtml(s){const t=document.createElement('textarea');t.innerHTML=s;return t.value;}
-const ECOLORS=['#e53935','#1565c0','#2e7d32','#e65100','#6a1b9a','#00838f','#f57f17'];
+function dhtml(s) { const t=document.createElement('textarea'); t.innerHTML=s; return t.value; }
+const ECOL = ['#e53935','#1565c0','#2e7d32','#e65100','#6a1b9a','#00838f','#f57f17'];
 
-function parseCircolare(p){
-  const title=decodeHtml(p.title?.rendered||'');
-  const m=title.match(/[Cc]ircolare\s+(\d+)/);
-  const num=m?m[1]:p.id;
-  const clean=title.replace(/^[Cc]ircolare\s+\d+\s*[-\u2013]\s*/,'').trim()||title;
-  const tags=p._embedded?.['wp:term']?.[1]?.map(t=>t.name)||[];
-  const d=new Date(p.date||'');
-  return{num,title:clean,data:d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'}),
-    tipo:tags[0]||'Generale',new:(Date.now()-d.getTime())<5*24*3600*1000,url:p.link||BASE_URL+'/circolare/'};
-}
-function parseEvento(p,i){
-  return{title:decodeHtml(p.title?.rendered||''),(p.meta?.event_start||p.date||'').substring(0,10),
-    color:ECOLORS[i%ECOLORS.length]};
+function parseCirc(p) {
+  const raw   = dhtml(p.title?.rendered || '');
+  const m     = raw.match(/[Cc]ircolare\s+(\d+)/);
+  const num   = m ? m[1] : String(p.id);
+  const title = raw.replace(/^[Cc]ircolare\s+\d+\s*[-\u2013]\s*/,'').trim() || raw;
+  const tags  = p._embedded?.['wp:term']?.[1]?.map(t=>t.name) || [];
+  const tipo  = tags[0] || 'Generale';
+  const d     = new Date(p.date || '');
+  const data  = d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const isNew = (Date.now() - d.getTime()) < 7*24*3600*1000;
+  return {num, title, data, tipo, isNew, url: p.link || LINKS.circolari};
 }
 
-function showSpinner(id){
-  const el=document.getElementById(id);
-  if(el)el.innerHTML='<div style="text-align:center;padding:30px;color:#aaa"><div style="font-size:28px;animation:spin 1s linear infinite;display:inline-block">⟳</div><div style="font-size:13px;margin-top:8px">Caricamento…</div></div>';
+function parseEv(p, i) {
+  const title = dhtml(p.title?.rendered || '');
+  const date  = (p.meta?.event_start || p.date || '').substring(0,10);
+  return {title, date, color: ECOL[i % ECOL.length], url: p.link || BASE+'/evento/'};
 }
 
-function renderCircolari(id,items){
-  const el=document.getElementById(id); if(!el)return;
-  el.innerHTML=items.length?items.map(c=>`
-    <div class="circ-item" onclick="openLink('${c.url}')">
-      <div class="circ-badge ${c.new?'new':''}">N.${c.num}</div>
-      <div class="circ-info"><div class="circ-title">${c.title}</div><div class="circ-meta">${c.data} · ${c.tipo}</div></div>
-      <div class="circ-arrow">›</div>
-    </div>`).join('')
-  :'<div style="color:#aaa;font-size:13px;text-align:center;padding:20px">Nessuna circolare disponibile</div>';
+function spinner(id) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = '<div class="spinner"><div class="s">⟳</div><div style="font-size:13px;margin-top:8px">Caricamento…</div></div>';
 }
 
-function renderEvents(id,ev){
-  const el=document.getElementById(id); if(!el)return;
-  el.innerHTML=ev.length?ev.map(e=>`
-    <div class="event-item">
-      <div class="event-dot" style="background:${e.color}"></div>
-      <div class="event-body"><div class="event-title">${e.title}</div>
-      <div class="event-date">${new Date(e.date).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div></div>
-    </div>`).join('')
-  :'<div style="color:#aaa;font-size:13px;text-align:center;padding:20px">Nessun evento in programma</div>';
+// ── RENDER CIRCOLARI ──────────────────────────────────────────────────
+function renderCirc(id, items) {
+  const el = document.getElementById(id); if (!el) return;
+  if (!items.length) { el.innerHTML='<div style="color:#aaa;font-size:13px;text-align:center;padding:20px">Nessuna circolare disponibile</div>'; return; }
+  el.innerHTML = items.map(c => `
+    <a class="citem" href="${c.url}" onclick="openLink('${c.url}');return false;">
+      <div class="cbadge ${c.isNew?'new':''}">N.${c.num}</div>
+      <div class="cinfo">
+        <div class="ctitle">${c.title}</div>
+        <div class="cmeta">${c.data} · ${c.tipo}</div>
+      </div>
+      <div class="carrow">›</div>
+    </a>`).join('');
 }
 
-let calDate=new Date();
-function renderCalendar(){
-  const y=calDate.getFullYear(),m=calDate.getMonth();
-  const months=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-  document.getElementById('cal-month-label').textContent=months[m]+' '+y;
-  const EV=window._EVENTI_LIVE||[];
-  const first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
-  const off=first===0?6:first-1, today=new Date();
-  const evDays=EV.filter(e=>{const d=new Date(e.date);return d.getMonth()===m&&d.getFullYear()===y;}).map(e=>new Date(e.date).getDate());
+// ── RENDER EVENTI ─────────────────────────────────────────────────────
+function renderEv(id, evs) {
+  const el = document.getElementById(id); if (!el) return;
+  if (!evs.length) { el.innerHTML='<div style="color:#aaa;font-size:13px;text-align:center;padding:20px">Nessun evento in programma</div>'; return; }
+  el.innerHTML = evs.map(e => `
+    <div class="evitem">
+      <div class="evdot" style="background:${e.color}"></div>
+      <div class="evbody">
+        <div class="evtitle">${e.title}</div>
+        <div class="evdate">${new Date(e.date).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ── CALENDARIO ────────────────────────────────────────────────────────
+let calDate = new Date();
+const MONTHS = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+
+function renderCal() {
+  const y=calDate.getFullYear(), m=calDate.getMonth();
+  document.getElementById('calmth').textContent = MONTHS[m]+' '+y;
+  const EV    = window._EV || [];
+  const first = new Date(y,m,1).getDay();
+  const days  = new Date(y,m+1,0).getDate();
+  const off   = first===0 ? 6 : first-1;
+  const today = new Date();
+  const evdays = EV.filter(e=>{const d=new Date(e.date);return d.getMonth()===m&&d.getFullYear()===y;}).map(e=>new Date(e.date).getDate());
   let html='';
-  for(let i=0;i<off;i++)html+='<div class="cal-day other-month"></div>';
+  for(let i=0;i<off;i++) html+='<div class="calday other"></div>';
   for(let d=1;d<=days;d++){
-    const isT=d===today.getDate()&&m===today.getMonth()&&y===today.getFullYear();
-    const hasE=evDays.includes(d), isSun=new Date(y,m,d).getDay()===0;
-    html+=`<div class="cal-day ${isT?'today':''} ${hasE?'has-event':''} ${isSun?'holiday':''}">${d}</div>`;
+    const isT = d===today.getDate()&&m===today.getMonth()&&y===today.getFullYear();
+    const hasE= evdays.includes(d);
+    const sun = new Date(y,m,d).getDay()===0;
+    html+=`<div class="calday ${isT?'today':''} ${hasE?'hasev':''} ${sun?'sun':''}">${d}</div>`;
   }
-  document.getElementById('cal-grid').innerHTML=html;
-  renderEvents('events-month',EV.filter(e=>{const d=new Date(e.date);return d.getMonth()===m&&d.getFullYear()===y;}));
+  document.getElementById('calgrid').innerHTML = html;
+  renderEv('ev-month', EV.filter(e=>{const d=new Date(e.date);return d.getMonth()===m&&d.getFullYear()===y;}));
 }
-function changeMonth(d){calDate.setMonth(calDate.getMonth()+d);renderCalendar();}
+function changeMonth(d){calDate.setMonth(calDate.getMonth()+d);renderCal();}
 
-function renderNotifiche(){
-  document.getElementById('notif-list').innerHTML=NOTIFICHE.map(n=>`
-    <div class="notif-item ${n.unread?'unread':''}">
-      <div class="ni-title">${n.title}</div><div class="ni-body">${n.body}</div><div class="ni-time">${n.time}</div>
+// ── NOTIFICHE ─────────────────────────────────────────────────────────
+function renderNotif() {
+  document.getElementById('nlist').innerHTML = NOTIFICHE.map(n=>`
+    <div class="nitem2 ${n.unread?'unread':''}">
+      <div class="nit">${n.title}</div>
+      <div class="nib">${n.body}</div>
+      ${n.time ? `<div class="nitime">${n.time}</div>` : ''}
     </div>`).join('');
 }
 function toggleNotif(){
-  const p=document.getElementById('notif-panel');
+  const p=document.getElementById('npanel');
   p.classList.toggle('open');
-  if(p.classList.contains('open')){document.getElementById('notif-count').style.display='none';NOTIFICHE.forEach(n=>n.unread=false);}
+  if(p.classList.contains('open')){
+    document.getElementById('nbadge').style.display='none';
+    NOTIFICHE.forEach(n=>n.unread=false);
+  }
 }
-function closeNotifOutside(e){if(e.target.id==='notif-panel')toggleNotif();}
+function closeNOut(e){if(e.target.id==='npanel')toggleNotif();}
 
-function switchView(name){
+// ── NAVIGAZIONE ───────────────────────────────────────────────────────
+function sw(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   document.getElementById('nav-'+name).classList.add('active');
-  if(name==='calendario')renderCalendar();
+  if(name==='calendario') renderCal();
 }
 
+// ── LINK / WEBVIEW ────────────────────────────────────────────────────
 function openLink(url){
-  if(window.Capacitor?.Plugins?.Browser)Capacitor.Plugins.Browser.open({url});
+  if(window.Capacitor?.Plugins?.Browser) Capacitor.Plugins.Browser.open({url});
   else window.open(url,'_blank');
 }
-function openExternal(){openLink('https://www.filattiera84.edu.it/');}
-function webviewBack(){try{document.getElementById('webview-frame').contentWindow.history.back();}catch(e){}}
-function webviewRefresh(){const f=document.getElementById('webview-frame');f.src=f.src;}
+function wvBack(){try{document.getElementById('wvframe').contentWindow.history.back();}catch(e){}}
+function wvRefresh(){const f=document.getElementById('wvframe');f.src=f.src;}
 
-async function loadCircolari(){
-  ['home-circolari','all-circolari'].forEach(showSpinner);
-  try{
-    const posts=await apiFetch(API+'/circolare?per_page=10&orderby=date&order=desc&_embed=1','circolari');
-    const circolari=posts.map(parseCircolare);
-    circolari.filter(c=>c.new).forEach(c=>{
+// ── TOAST ─────────────────────────────────────────────────────────────
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ── CARICA CIRCOLARI DAL SITO ─────────────────────────────────────────
+async function loadCirc(){
+  ['home-circ','all-circ'].forEach(spinner);
+  try {
+    const posts = await apiFetch(API+'/circolare?per_page=10&orderby=date&order=desc&_embed=1','circ');
+    const circs = posts.map(parseCirc);
+
+    // aggiorna notifiche con le nuove circolari
+    circs.filter(c=>c.isNew).forEach(c=>{
       if(!NOTIFICHE.find(n=>n.title.includes('n.'+c.num)))
-        NOTIFICHE.unshift({title:'Nuova circolare n.'+c.num,body:c.title,time:'recente',unread:true});
+        NOTIFICHE.unshift({title:'Nuova circolare n.'+c.num, body:c.title, time:'recente', unread:true});
     });
-    const nb=NOTIFICHE.filter(x=>x.unread).length;
-    const badge=document.getElementById('notif-count');
-    if(nb>0){badge.textContent=nb;badge.style.display='flex';}
-    renderNotifiche();
-    renderCircolari('home-circolari',circolari.slice(0,3));
-    renderCircolari('all-circolari',circolari);
-  }catch(e){
-    const fb=[
-      {num:'173',title:'Sciopero 9 marzo 2026',data:'06/03/2026',tipo:'Generale',new:true,url:BASE_URL+'/circolare/'},
-      {num:'166',title:'Formazione docenti tutor',data:'24/02/2026',tipo:'Docenti',url:BASE_URL+'/circolare/'},
-      {num:'165',title:'O.M. n.27 del 16 febbraio 2026',data:'21/02/2026',tipo:'Generale',url:BASE_URL+'/circolare/'},
+    const nb = NOTIFICHE.filter(n=>n.unread).length;
+    if(nb>0){const b=document.getElementById('nbadge');b.textContent=nb;b.style.display='flex';}
+    renderNotif();
+
+    renderCirc('home-circ', circs.slice(0,3));
+    renderCirc('all-circ',  circs);
+  } catch(err) {
+    // Fallback: ultime circolari reali già note
+    const fb = [
+      {num:'173', title:'Sciopero 9 marzo 2026', data:'06/03/2026', tipo:'Tutta la comunità', isNew:true,  url:'https://www.filattiera84.edu.it/circolare/comparto-e-area-istruzione-e-ricerca_-settore-scuola_-azioni-di-sciopero-per-lintera-giornata-del-9-marzo-2026/'},
+      {num:'166', title:'Formazione docenti tutor – a.s. 2025/26', data:'25/02/2026', tipo:'Docenti', isNew:false, url:'https://www.filattiera84.edu.it/circolare/periodo-di-formazione-e-di-prova-per-il-personale-docente-ed-educativo-anno-scolastico-2025-2026-attivita-di-formazione-per-i-docenti-tutor/'},
+      {num:'165', title:'O.M. n.27 del 16 febbraio 2026 – errata corrige', data:'24/02/2026', tipo:'Docenti', isNew:false, url:'https://www.filattiera84.edu.it/circolare/trasmissione-ordinanza-ministeriale-n-27-del-16-febbraio-2026-e-avviso-di-errata-corrige/'},
+      {num:'163', title:'Accesso professionisti sanitari in classe', data:'23/02/2026', tipo:'Tutta la comunità', isNew:false, url:'https://www.filattiera84.edu.it/circolare/aaccesso-in-classe-di-professionisti-sanitari-nellambito-di-piani-terapeutici-individualizzati/'},
+      {num:'162', title:'Sportello ascolto psicologico a.s. 2025/26', data:'23/02/2026', tipo:'Tutta la comunità', isNew:false, url:'https://www.filattiera84.edu.it/circolare/avvio-attivita-di-sportello-dascolto-psicologico-uno-spazio-per-crescere-capire-imparare-a-stare-bene-studio-progetti-evolutivi-a-s-2025-26/'},
     ];
-    renderCircolari('home-circolari',fb.slice(0,3));
-    renderCircolari('all-circolari',fb);
+    renderCirc('home-circ', fb.slice(0,3));
+    renderCirc('all-circ',  fb);
   }
 }
 
-async function loadEventi(){
-  showSpinner('home-events');
-  try{
-    const posts=await apiFetch(API+'/evento?per_page=20&orderby=date&order=asc','eventi');
-    window._EVENTI_LIVE=posts.map(parseEvento);
-    renderEvents('home-events',window._EVENTI_LIVE.slice(0,3));
-    renderCalendar();
-  }catch(e){window._EVENTI_LIVE=[];renderCalendar();}
+// ── CARICA EVENTI DAL SITO ────────────────────────────────────────────
+async function loadEv(){
+  spinner('home-ev');
+  try {
+    const posts = await apiFetch(API+'/evento?per_page=20&orderby=date&order=asc','ev');
+    window._EV = posts.map(parseEv);
+    renderEv('home-ev', window._EV.slice(0,3));
+    renderCal();
+  } catch(e) { window._EV=[]; renderCal(); }
 }
 
+// ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
-  window._EVENTI_LIVE=[];
-  renderCalendar(); renderNotifiche();
-  Promise.all([loadCircolari(),loadEventi()]);
+  window._EV = [];
+  renderCal();
+  renderNotif();
+  Promise.all([loadCirc(), loadEv()]);
 });
 </script>
 </body>
