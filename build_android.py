@@ -120,25 +120,33 @@ write("app/src/main/res/values/styles.xml", """<?xml version="1.0" encoding="utf
 </resources>
 """)
 
-# Icona PNG blu 192x192
-def make_png(w, h, r, g, b):
-    rows = []
-    for _ in range(h):
-        row = [0]
-        for _ in range(w):
-            row += [r, g, b, 255]
-        rows.append(bytes(row))
-    raw = b"".join(rows)
-    def chunk(t, d):
-        c = struct.pack(">I", len(d)) + t + d
-        return c + struct.pack(">I", zlib.crc32(c[4:]) & 0xFFFFFFFF)
-    return (b"\x89PNG\r\n\x1a\n"
-            + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 6, 0, 0, 0))
-            + chunk(b"IDAT", zlib.compress(raw, 9))
-            + chunk(b"IEND", b""))
-
-write("app/src/main/res/mipmap-hdpi/ic_launcher.png",
-      make_png(192, 192, 0, 51, 102), mode="wb")
+# Icona da file caricato nel repository
+import shutil
+if os.path.exists('icon.png'):
+    for res in ['mipmap-hdpi','mipmap-mdpi','mipmap-xhdpi','mipmap-xxhdpi','mipmap-xxxhdpi']:
+        mkdir('app/src/main/res/'+res)
+        shutil.copy('icon.png','app/src/main/res/'+res+'/ic_launcher.png')
+    print("Icona personalizzata applicata!")
+else:
+    print("ATTENZIONE: icon.png non trovato, uso icona predefinita")
+    def make_png(w,h,r,g,b):
+        rows=[]
+        for _ in range(h):
+            row=[0]
+            for _ in range(w): row+=[r,g,b,255]
+            rows.append(bytes(row))
+        raw=b"".join(rows)
+        def chunk(t,d):
+            c=struct.pack(">I",len(d))+t+d
+            return c+struct.pack(">I",zlib.crc32(c[4:])&0xFFFFFFFF)
+        return(b"\x89PNG\r\n\x1a\n"
+            +chunk(b"IHDR",struct.pack(">IIBBBBB",w,h,8,6,0,0,0))
+            +chunk(b"IDAT",zlib.compress(raw,9))
+            +chunk(b"IEND",b""))
+    for res in ['mipmap-hdpi','mipmap-mdpi','mipmap-xhdpi','mipmap-xxhdpi','mipmap-xxxhdpi']:
+        mkdir('app/src/main/res/'+res)
+        write('app/src/main/res/'+res+'/ic_launcher.png',
+              make_png(192,192,0,51,102),mode="wb")
 
 # build.gradle (app)
 write("app/build.gradle", """plugins { id 'com.android.application' }
