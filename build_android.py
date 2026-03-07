@@ -1,24 +1,13 @@
-import os
+import os, struct, zlib
 
-# Configurazione
-APP_NAME = "IC Filattiera 84"
-PACKAGE_NAME = "it.edu.filattiera84.app"
-MAIN_URL = "https://www.filattiera84.edu.it/"
+def mkdir(p):
+    if p:
+        os.makedirs(p, exist_ok=True)
 
-def create_structure():
-    paths = [
-        "app/src/main/java/it/edu/filattiera84/app",
-        "app/src/main/res/layout",
-        "app/src/main/res/values",
-        "gradle/wrapper"
-    ]
-    for path in paths:
-        os.makedirs(path, exist_ok=True)
-
-def write_file(path, content):
-    with open(path, "w", encoding="utf-8") as f:
+def write(path, content, mode="w"):
+    mkdir(os.path.dirname(path))
+    with open(path, mode) as f:
         f.write(content)
-
 # 1. LAYOUT XML (WebView + ProgressBar)
 layout_content = """<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
