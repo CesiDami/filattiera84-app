@@ -437,12 +437,25 @@ async function loadCirc(){
 // ── CARICA EVENTI DAL SITO ────────────────────────────────────────────
 async function loadEv(){
   spinner('home-ev');
+  const FALLBACK_EV = [
+    {title:'Consiglio di Istituto',         date:'2026-03-17', color:ECOL[0]},
+    {title:'Colloqui con le famiglie',       date:'2026-03-20', color:ECOL[1]},
+    {title:'Vacanze di Pasqua (inizio)',     date:'2026-04-02', color:ECOL[2]},
+    {title:'Rientro dalle vacanze',          date:'2026-04-14', color:ECOL[3]},
+    {title:'Scrutini II quadrimestre',       date:'2026-06-08', color:ECOL[4]},
+    {title:'Fine anno scolastico',           date:'2026-06-10', color:ECOL[5]},
+  ];
   try {
     const posts = await apiFetch(API+'/evento?per_page=20&orderby=date&order=asc','ev');
+    if (!posts || !posts.length) throw new Error('empty');
     window._EV = posts.map(parseEv);
     renderEv('home-ev', window._EV.slice(0,3));
     renderCal();
-  } catch(e) { window._EV=[]; renderCal(); }
+  } catch(e) {
+    window._EV = FALLBACK_EV;
+    renderEv('home-ev', FALLBACK_EV.slice(0,3));
+    renderCal();
+  }
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────
