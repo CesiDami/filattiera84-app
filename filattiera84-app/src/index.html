@@ -147,37 +147,37 @@
     <div class="stitle">🔗 Accessi rapidi</div>
     <div class="qgrid">
 
-      <!-- Registro Famiglie (Axios — link ufficiale dal sito) -->
+      <!-- Registro Famiglie -->
       <button class="qcard q1" onclick="openLink('https://registrofamiglie.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582')">
         <div class="qicon">📚</div>
         <div class="qlabel">Registro Famiglie</div>
       </button>
 
-      <!-- Registro Docenti (Axios — link ufficiale dal sito) -->
+      <!-- Registro Docenti -->
       <button class="qcard q2" onclick="openLink('https://registro.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582')">
         <div class="qicon">👩‍🏫</div>
         <div class="qlabel">Registro Docenti</div>
       </button>
 
-      <!-- Circolari — URL corretto dal sito -->
-      <button class="qcard q3" onclick="switchView('circolari')">
+      <!-- BUG FIX #2: switchView → sw -->
+      <button class="qcard q3" onclick="sw('circolari')">
         <div class="qicon">📋</div>
         <div class="qlabel">Circolari</div>
       </button>
 
-      <!-- Sito ufficiale — apre WebView interno -->
-      <button class="qcard q4" onclick="switchView('sito')">
+      <!-- BUG FIX #2: switchView → sw -->
+      <button class="qcard q4" onclick="sw('sito')">
         <div class="qicon">🌐</div>
         <div class="qlabel">Sito ufficiale</div>
       </button>
 
-      <!-- Pago in Rete — link MIM ufficiale -->
-      <button class="qcard q5" onclick="openLink('https://pagoinrete.pubblica.istruzione.it/Pars2Client-web/')"
+      <!-- BUG FIX #1: aggiunto > di chiusura del tag button -->
+      <button class="qcard q5" onclick="openLink('https://pagoinrete.pubblica.istruzione.it/Pars2Client-web/')">
         <div class="qicon">💳</div>
         <div class="qlabel">Pago in Rete</div>
       </button>
 
-      <!-- Email Segreteria — indirizzo ufficiale dal footer del sito -->
+      <!-- Email Segreteria -->
       <button class="qcard q6" onclick="openLink('mailto:rmic8eg00q@istruzione.it')">
         <div class="qicon">✉️</div>
         <div class="qlabel">Email Segreteria</div>
@@ -258,7 +258,7 @@ const LINKS = {
   circolari:       'https://www.filattiera84.edu.it/circolare/',
   regFamiglie:     'https://registrofamiglie.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582',
   regDocenti:      'https://registro.axioscloud.it/Pages/SD/SD_Login.aspx?Customer_id=97713420582',
-  pagoInRete:      'https://www.istruzione.it/pagoinrete/',
+  pagoInRete:      'https://pagoinrete.pubblica.istruzione.it/Pars2Client-web/',
   emailSegreteria: 'mailto:rmic8eg00q@istruzione.it',
   pec:             'mailto:rmic8eg00q@pec.istruzione.it',
   tel:             'tel:068102978',
@@ -391,7 +391,6 @@ function sw(name){
 
 // ── LINK / WEBVIEW ────────────────────────────────────────────────────
 function openLink(url){
-  // mailto e tel aprono sempre l'app nativa del telefono
   if(url.startsWith('mailto:') || url.startsWith('tel:')){
     window.location.href = url;
     return;
@@ -412,7 +411,6 @@ async function loadCirc(){
     const posts = await apiFetch(API+'/circolare?per_page=10&orderby=date&order=desc&_embed=1','circ');
     const circs = posts.map(parseCirc);
 
-    // aggiorna notifiche con le nuove circolari
     circs.filter(c=>c.isNew).forEach(c=>{
       if(!NOTIFICHE.find(n=>n.title.includes('n.'+c.num)))
         NOTIFICHE.unshift({title:'Nuova circolare n.'+c.num, body:c.title, time:'recente', unread:true});
@@ -424,7 +422,6 @@ async function loadCirc(){
     renderCirc('home-circ', circs.slice(0,3));
     renderCirc('all-circ',  circs);
   } catch(err) {
-    // Fallback: ultime circolari reali già note
     const fb = [
       {num:'173', title:'Sciopero 9 marzo 2026', data:'06/03/2026', tipo:'Tutta la comunità', isNew:true,  url:'https://www.filattiera84.edu.it/circolare/comparto-e-area-istruzione-e-ricerca_-settore-scuola_-azioni-di-sciopero-per-lintera-giornata-del-9-marzo-2026/'},
       {num:'166', title:'Formazione docenti tutor – a.s. 2025/26', data:'25/02/2026', tipo:'Docenti', isNew:false, url:'https://www.filattiera84.edu.it/circolare/periodo-di-formazione-e-di-prova-per-il-personale-docente-ed-educativo-anno-scolastico-2025-2026-attivita-di-formazione-per-i-docenti-tutor/'},
