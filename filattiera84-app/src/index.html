@@ -391,6 +391,11 @@ function sw(name){
 
 // ── LINK / WEBVIEW ────────────────────────────────────────────────────
 function openLink(url){
+  // mailto e tel aprono sempre l'app nativa del telefono
+  if(url.startsWith('mailto:') || url.startsWith('tel:')){
+    window.location.href = url;
+    return;
+  }
   if(window.Capacitor?.Plugins?.Browser) Capacitor.Plugins.Browser.open({url});
   else window.open(url,'_blank');
 }
