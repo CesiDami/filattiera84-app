@@ -407,9 +407,15 @@ function sw(name){
 // ── LINK / WEBVIEW ────────────────────────────────────────────────────
 function openLink(url){
   if(url.startsWith('mailto:') || url.startsWith('tel:')){
-    // _system attiva sempre l'intent Android (chooser app email/telefono)
-    // funziona sia con Capacitor che con WebView pura
-    window.open(url, '_system');
+    // Crea un <a> reale e simulane il click: funziona su browser Android,
+    // WebView e Capacitor senza errori ERR_UNKNOWN_URL_SCHEME
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     return;
   }
   if(window.Capacitor?.Plugins?.Browser) Capacitor.Plugins.Browser.open({url});
