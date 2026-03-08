@@ -407,9 +407,9 @@ function sw(name){
 // ── LINK / WEBVIEW ────────────────────────────────────────────────────
 function openLink(url){
   if(url.startsWith('mailto:') || url.startsWith('tel:')){
-    // Su Capacitor/Android usa _system per attivare l'intent chooser
-    if(window.Capacitor) window.open(url, '_system');
-    else window.location.href = url;
+    // _system attiva sempre l'intent Android (chooser app email/telefono)
+    // funziona sia con Capacitor che con WebView pura
+    window.open(url, '_system');
     return;
   }
   if(window.Capacitor?.Plugins?.Browser) Capacitor.Plugins.Browser.open({url});
