@@ -407,7 +407,9 @@ function sw(name){
 // ── LINK / WEBVIEW ────────────────────────────────────────────────────
 function openLink(url){
   if(url.startsWith('mailto:') || url.startsWith('tel:')){
-    window.location.href = url;
+    // Su Capacitor/Android usa _system per attivare l'intent chooser
+    if(window.Capacitor) window.open(url, '_system');
+    else window.location.href = url;
     return;
   }
   if(window.Capacitor?.Plugins?.Browser) Capacitor.Plugins.Browser.open({url});
@@ -466,12 +468,61 @@ async function loadEv(){
   }
 }
 
+// ── PUSH NOTIFICATIONS (Capacitor) ────────────────────────────────────
+async function initPush() {
+  // Esegui solo se Capacitor è disponibile (app nativa Android)
+  if (!window.Capacitor?.Plugins?.PushNotifications) return;
+
+  const { PushNotifications } = Capacitor.Plugins;
+
+  // 1. Chiedi il permesso all'utente
+  const perm = await PushNotifications.requestPermissions();
+  if (perm.receive !== 'granted') {
+    console.warn('Permesso notifiche negato');
+    return;
+  }
+
+  // 2. Registra il dispositivo su Firebase (ottieni il token FCM)
+  await PushNotifications.register();
+
+  // 3. Token ottenuto — in produzione mandarlo al tuo server
+  PushNotifications.addListener('registration', token => {
+    console.log('FCM Token:', token.value);
+    // TODO: invia token.value al tuo server per mandare notifiche mirate
+    // fetch('https://tuoserver.it/save-token', { method:'POST', body: JSON.stringify({token: token.value}) })
+  });
+
+  // 4. Errore di registrazione
+  PushNotifications.addListener('registrationError', err => {
+    console.error('Errore registrazione push:', err);
+  });
+
+  // 5. Notifica ricevuta con app APERTA → aggiunge al pannello interno
+  PushNotifications.addListener('pushNotificationReceived', notification => {
+    const title = notification.title || 'Notifica';
+    const body  = notification.body  || '';
+    NOTIFICHE.unshift({ title, body, time: 'adesso', unread: true });
+    const nb = NOTIFICHE.filter(n => n.unread).length;
+    const b  = document.getElementById('nbadge');
+    b.textContent = nb;
+    b.style.display = 'flex';
+    showToast('\uD83D\uDD14 ' + title);
+  });
+
+  // 6. Utente tocca la notifica con app in BACKGROUND → apre sezione circolari
+  PushNotifications.addListener('pushNotificationActionPerformed', action => {
+    const data = action.notification?.data || {};
+    sw(data.view || 'circolari');
+  });
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
   window._EV = [];
   renderCal();
   renderNotif();
   Promise.all([loadCirc(), loadEv()]);
+  initPush();
 });
 </script>
 </body>
